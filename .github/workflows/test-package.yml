@@ -43,13 +43,13 @@ jobs:
           terraform --version
 
       - name: Configure AWS credentials for staging account
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
           role-session-name: GH-Action-Staging-Session
           role-duration-seconds: 600
           aws-region: us-east-1
 
-      - name: Copy files to the test website with the AWS CLI
+      - name: Test S3 call
         run: |
           aws s3 ls
