@@ -28,6 +28,11 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
 
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Install Terraform
         id: install-tf
@@ -36,3 +41,15 @@ jobs:
       - name: Print TF version
         run: |
           terraform --version
+
+      - name: Configure AWS credentials for staging account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
+          role-session-name: GH-Action-Staging-Session
+          role-duration-seconds: 600
+          aws-region: us-east-1
+
+      - name: Copy files to the test website with the AWS CLI
+        run: |
+          aws s3 ls
