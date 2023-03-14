@@ -48,7 +48,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
           aws-region: us-east-1
           role-session-name: GitHub-Staging-Workflow-Session
-          role-duration-seconds: 600
+          role-duration-seconds: 900
 
       - name: Verify identity
         run: |
