@@ -3,8 +3,8 @@ name: Test the Python package
 on: [push]
 
 jobs:
-  build:
-
+  test:
+    name: test
     runs-on: ubuntu-latest
 
     steps:
@@ -19,5 +19,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-test.txt
       - name: Run tests
+        id: python-test
         run: |
           python -m unittest discover -s test/ -p "test_*.py"
+
+  deploy:
+    name: deploy
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Terraform
+        id: install-tf
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Print TF version
+        run: |
+          terraform --version
