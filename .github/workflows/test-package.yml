@@ -46,9 +46,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
-          role-session-name: GH-Action-Staging-Session
-          role-duration-seconds: 600
           aws-region: us-east-1
+          mask-aws-account-id: false
 
       - name: Test S3 call
         run: |
