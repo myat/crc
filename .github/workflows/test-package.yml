@@ -51,8 +51,8 @@ jobs:
           role-duration-seconds: 900
 
       - name: Initialize Terraform
+        working-directory: ./terraform
         run: |
-          cd './terraform'
           terraform init \
             -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
             -backend-config="region=us-east-1" \
@@ -60,5 +60,6 @@ jobs:
             -backend-config="encrypt=true"
 
       - name: Test Terraform
+        working-directory: ./terraform
         run: |
           terraform plan
