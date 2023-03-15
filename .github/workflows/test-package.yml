@@ -50,6 +50,14 @@ jobs:
           role-session-name: GitHub-Staging-Workflow-Session
           role-duration-seconds: 900
 
-      - name: Verify identity
+      - name: Initialize Terraform
         run: |
-          aws sts get-caller-identity
+          terraform init \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="region=us-east-1" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="encrypt=true"
+
+      - name: Test Terraform
+        run: |
+          terraform plan
