@@ -52,6 +52,7 @@ jobs:
           role-duration-seconds: 900
 
       - name: Initialize Terraform
+        id: tf-init
         working-directory: terraform
         run: |
           terraform init \
@@ -61,21 +62,25 @@ jobs:
             -backend-config="encrypt=true"
 
       - name: Terraform plan
+        id: tf-plan
         working-directory: terraform
         run: |
           terraform plan
 
       - name: Terraform apply
+        id: tf-apply
         working-directory: terraform
         run: |
           terraform apply -auto-approve
 
       - name: Test if apply was successful
+        id: tf-test
         working-directory: terraform
         run: |
-          aws s3 ls s3://$(terraform output -raw lambda_bucket_name)
+          aws s3 ls s3://${{ steps.tf-apply.outputs.lambda_bucket_name }}
 
       - name: Terraform destroy
+        id: tf-destroy
         working-directory: terraform
         run: |
           terraform destroy -auto-approve
