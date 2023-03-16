@@ -60,7 +60,22 @@ jobs:
             -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
             -backend-config="encrypt=true"
 
-      - name: Test Terraform
+      - name: Terraform plan
         working-directory: terraform
         run: |
           terraform plan
+
+      - name: Terraform apply
+        working-directory: terraform
+        run: |
+          terraform apply -auto-approve
+
+      - name: Test if apply was successful
+        working-directory: terraform
+        run: |
+          aws s3 ls s3://$(terraform output -raw lambda_bucket_name)
+
+      - name: Terraform destroy
+        working-directory: terraform
+        run: |
+          terraform destroy -auto-approve
