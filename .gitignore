@@ -154,5 +154,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-#Terraform lock files
-.terraform.lock.hcl
+#Ignore zip output from Terraform
+lambda_function.zip
