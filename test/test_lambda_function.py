@@ -6,6 +6,8 @@ import json
 import sys
 sys.path.append("..")
 
+DYNAMODB_TABLE_NAME = 'visitor_count_table'
+
 
 @mock_dynamodb
 class TestLambdaFunction(unittest.TestCase):
@@ -15,7 +17,7 @@ class TestLambdaFunction(unittest.TestCase):
         """ Create database resource and mock table. """
         self.dynamodb = boto3.client('dynamodb', region_name='us-east-1')
         self.mockTable = self.dynamodb.create_table(
-            TableName='site_visitors',
+            TableName=DYNAMODB_TABLE_NAME,
             KeySchema=[
                 {
                     'AttributeName': 'site_name',
@@ -35,13 +37,13 @@ class TestLambdaFunction(unittest.TestCase):
         )
 
         self.dynamodb.put_item(
-            TableName='site_visitors',
+            TableName=DYNAMODB_TABLE_NAME,
             Item={
                     'site_name': {
                         'S': 'resume.kgmy.at'
                     },
                     'views': {
-                        'N': '3'
+                        'N': '0'
                     }
                 }
             )
@@ -53,16 +55,17 @@ class TestLambdaFunction(unittest.TestCase):
     def test_if_mock_table_exists(self):
         """ Test if mock table is ready """
         mockTable_name = self.mockTable['TableDescription']['TableName']
-        self.assertIn('site_visitors', mockTable_name)
+        self.assertIn(DYNAMODB_TABLE_NAME, mockTable_name)
 
     # Test for an invalid request and expected HTTP 400 response
     def test_lambda_handler_invalid_request(self):
         """ Test handler response to an invalid request. """
+
         event = {
-            "version": "2.0",
-            "routeKey": "$default",
-            "rawPath": "/invalidPath"
-            }
+            "resource": "/{proxy+}",
+            "path": "/invalidPath",
+            "httpMethod": "GET"
+        }
 
         from src.lambda_function import lambda_handler
 
@@ -73,15 +76,11 @@ class TestLambdaFunction(unittest.TestCase):
     # Pass if HTTP 200 and body is not empty.
     def test_lambda_handler_get_request(self):
         """ Test handler response to a getVisitors request. """
+
         event = {
-            "version": "2.0",
-            "routeKey": "$default",
-            "rawPath": "/getVisitors",
-            "requestContext": {
-                "http": {
-                    "method": "GET"
-                }
-            }
+            "resource": "/{proxy+}",
+            "path": "/getVisitors",
+            "httpMethod": "GET"
         }
 
         from src.lambda_function import lambda_handler
@@ -96,14 +95,9 @@ class TestLambdaFunction(unittest.TestCase):
         """ Test handler response to an counter update request. """
 
         event = {
-            "version": "2.0",
-            "routeKey": "$default",
-            "rawPath": "/updateVisitors",
-            "requestContext": {
-                "http": {
-                    "method": "GET"
-                }
-            }
+            "resource": "/{proxy+}",
+            "path": "/updateVisitors",
+            "httpMethod": "GET"
         }
 
         from src.lambda_function import lambda_handler
