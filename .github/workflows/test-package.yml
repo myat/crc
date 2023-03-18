@@ -77,9 +77,8 @@ jobs:
         id: test-api-gw
         working-directory: terraform
         run: |
-          url = $(terraform output -raw api_gw_url)
-          echo $url
-          curl "$url/getVisitors"
+          echo $(terraform output -raw api_gw_url)
+          curl "$(terraform output -raw api_gw_url)/getVisitors"
 
       - name: Terraform destroy
         id: tf-destroy
