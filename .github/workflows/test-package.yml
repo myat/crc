@@ -81,6 +81,7 @@ jobs:
 
       - name: Terraform destroy
         id: tf-destroy
+        if: success() || failure()
         working-directory: terraform
         run: |
           terraform destroy -auto-approve
