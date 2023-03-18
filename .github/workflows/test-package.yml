@@ -73,11 +73,11 @@ jobs:
         run: |
           terraform apply -auto-approve
 
-      - name: Test if apply was successful
-        id: tf-test
+      - name: Test if API was deployed
+        id: test-api-gw
         working-directory: terraform
         run: |
-          aws s3 ls s3://${{ steps.tf-apply.outputs.lambda_bucket_name }}
+          curl "$(terraform output -raw api_gw_url)/getVisitors"
 
       - name: Terraform destroy
         id: tf-destroy
