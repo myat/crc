@@ -3,8 +3,8 @@ name: Test the Python package
 on: [push]
 
 jobs:
-  test:
-    name: test
+  unittest:
+    name: Perform unit tests
     runs-on: ubuntu-latest
 
     steps:
@@ -23,9 +23,9 @@ jobs:
         run: |
           pytest -v test/test_lambda.py
 
-  deploy:
-    name: deploy
-    needs: test
+  deploy_and_test:
+    name: Deploy and test
+    needs: unittest
     runs-on: ubuntu-latest
 
     # These permissions are needed to interact with GitHub's OIDC Token endpoint.
