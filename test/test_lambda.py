@@ -1,4 +1,5 @@
 # File: test_lambda.py
+# Unit test on lambda_function.py with pytest and moto
 import boto3
 import pytest
 import sys
