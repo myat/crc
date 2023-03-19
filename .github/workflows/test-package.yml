@@ -77,12 +77,11 @@ jobs:
         run: |
           terraform apply -auto-approve
 
-      - name: Test if API was deployed
+      - name: Test if API was deployed and passing tests
         id: test-api-gw
         working-directory: terraform
         run: |
-          echo $(terraform output -raw api_gw_url)
-          curl "$(terraform output -raw api_gw_url)/getVisitors"
+          pytest -v ../test/test_api_endpoint.py --api-gw-url=$(terraform output -raw api_gw_url)
 
       - name: Terraform destroy
         id: tf-destroy
