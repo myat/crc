@@ -137,3 +137,19 @@ resource "aws_api_gateway_deployment" "lambda_api_deployment" {
   rest_api_id = aws_api_gateway_rest_api.visitor_api.id
   stage_name  = "test"
 }
+
+# Add CORS config
+module "cors" {
+  source  = "squidfunk/api-gateway-enable-cors/aws"
+  version = "0.3.3"
+
+  api_id          = aws_api_gateway_rest_api.visitor_api.id
+  api_resource_id = aws_api_gateway_resource.lambda.id
+
+  allow_methods = [
+    "OPTIONS",
+    "HEAD",
+    "GET"
+  ]
+  allow_origin = "resume.kgmy.at"
+}
