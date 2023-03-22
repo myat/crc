@@ -11,3 +11,9 @@ variable "cf_alias_domain" {
   type        = string
   default     = "restaging.kgmy.at"
 }
+
+variable "zone_name" {
+  description = "Primary domain name"
+  type        = string
+  default     = "kgmy.at"
+}
