@@ -9,10 +9,10 @@ variable "aws_region" {
 variable "cf_alias_domain" {
   description = "Custom domain name to serve as CloudFront alias"
   type        = string
-  default     = "restaging.kgmy.at"
+  default     = "staging.kgmy.at"
 }
 
-variable "zone_name" {
+variable "apex_domain" {
   description = "Primary domain name"
   type        = string
   default     = "kgmy.at"
