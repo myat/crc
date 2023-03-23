@@ -23,3 +23,8 @@ data "aws_iam_policy_document" "allow_cf_s3_read_only" {
     }
   }
 }
+
+data "aws_ssm_parameter" "ssm_gandi_api_key" {
+  name            = "/CRC/API/GandiDNS"
+  with_decryption = true
+}
