@@ -1,3 +1,5 @@
+# Providers needed
+
 provider "aws" {
   region = var.aws_region
 
@@ -8,6 +10,10 @@ provider "aws" {
       environment = "staging"
     }
   }
+}
+
+provider "gandi" {
+  key = data.aws_ssm_parameter.ssm_gandi_api_key.value
 }
 
 # Module to iterate through the directory
