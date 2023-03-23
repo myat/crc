@@ -17,3 +17,9 @@ output "cf_dist_domain_name" {
 
   value = aws_cloudfront_distribution.frontend_distribution.domain_name
 }
+
+output "acm_cert_time" {
+  description = "Time at which the certificate was issued"
+
+  value = aws_acm_certificate_validation.cert_dns_validatiion.id
+}

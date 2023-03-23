@@ -82,7 +82,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
     prefix          = "cf-logs-frontend-staging"
   }
 
-  #aliases = ["mysite.example.com", "yoursite.example.com"]
+  aliases = [var.cf_alias_domain]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
@@ -113,10 +113,17 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
     }
   }
 
+  # Use ACM issued certificate for alias domain
+  # Remember to set ssl_support_method to sni-only
+
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = aws_acm_certificate.domain_cert.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
 }
+
+# OAC on CF distribution
 
 resource "aws_cloudfront_origin_access_control" "frontend_bucket_oac" {
   name                              = "frontend_bucket_oac"
@@ -124,4 +131,43 @@ resource "aws_cloudfront_origin_access_control" "frontend_bucket_oac" {
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
+}
+
+# Issue a certificate in ACM with DNS validation option
+
+resource "aws_acm_certificate" "domain_cert" {
+  domain_name       = var.cf_alias_domain
+  validation_method = "DNS"
+}
+
+# Add DNS validation record on Gandi
+
+resource "gandi_livedns_record" "dns_validation_record" {
+  zone = data.gandi_domain.apex_domain_zone.id
+
+  # Gandi DNS records need to be without the apex domain
+  name = replace(tolist(aws_acm_certificate.domain_cert.domain_validation_options)[0].resource_record_name, ".${var.apex_domain}.", "")
+
+  type   = tolist(aws_acm_certificate.domain_cert.domain_validation_options)[0].resource_record_type
+  ttl    = 300
+  values = [tolist(aws_acm_certificate.domain_cert.domain_validation_options)[0].resource_record_value]
+}
+
+# Verify DNS validation records
+
+resource "aws_acm_certificate_validation" "cert_dns_validatiion" {
+  certificate_arn = aws_acm_certificate.domain_cert.arn
+  depends_on = [
+    gandi_livedns_record.dns_validation_record,
+  ]
+}
+
+# Add CNAME to CF distribution on Gandi
+
+resource "gandi_livedns_record" "cname_frontend_cf_dist" {
+  zone   = data.gandi_domain.apex_domain_zone.id
+  name   = replace(var.cf_alias_domain, ".${var.apex_domain}", "")
+  type   = "CNAME"
+  ttl    = 300
+  values = ["${aws_cloudfront_distribution.frontend_distribution.domain_name}."]
 }
