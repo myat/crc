@@ -3,7 +3,9 @@ provider "aws" {
 
   default_tags {
     tags = {
-      app = "crc-backend"
+      stack = "crc-backend"
+      project = "crc"
+      environment = "staging"
     }
   }
 }
@@ -151,5 +153,5 @@ module "cors" {
     "HEAD",
     "GET"
   ]
-  allow_origin = "resume.kgmy.at"
+  allow_origin = "staging.kgmy.at"
 }
