@@ -3,7 +3,7 @@
 terraform {
 
   backend "s3" {
-    key = "global/crc-backend/terraform.tfstate"
+    key = "global/crc-front/terraform.tfstate"
   }
 
   required_providers {
