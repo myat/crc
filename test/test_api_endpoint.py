@@ -8,20 +8,20 @@ import requests
 
 # Get --api-gw-url parameter in
 @pytest.fixture
-def api_gw_url(request):
-    return request.config.getoption('--api-gw-url')
+def api_gw_domain(request):
+    return request.config.getoption('--api-gw-domain')
 
 
 # Append required API endpoint locations
 @pytest.fixture
-def get_visitors_api_url(api_gw_url):
-    api_url = f'{api_gw_url}/getVisitors'
+def get_visitors_api_url(api_gw_domain):
+    api_url = f'https://{api_gw_domain}/getVisitors'
     return api_url
 
 
 @pytest.fixture
 def update_visitors_api_url(api_gw_url):
-    api_url = f'{api_gw_url}/updateVisitors'
+    api_url = f'https://{api_gw_url}/updateVisitors'
     return api_url
 
 
