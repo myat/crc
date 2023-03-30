@@ -67,3 +67,16 @@ data "aws_iam_policy_document" "combined_lambda_role" {
     data.aws_iam_policy_document.lambda_basic_exec.json
   ]
 }
+
+# Fetch Gandi API key
+
+data "aws_ssm_parameter" "ssm_gandi_api_key" {
+  name            = "/CRC/API/GandiDNS"
+  with_decryption = true
+}
+
+# Fetch apex domain's zone data from Gandi
+
+data "gandi_domain" "apex_domain_zone" {
+  name = var.apex_domain
+}
