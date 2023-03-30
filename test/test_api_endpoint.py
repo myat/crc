@@ -1,12 +1,12 @@
 # File: test_api_endpoint.py
 # Test live API endpoint
-# Takes --api-gw-url input
+# Takes --api-gw-domain input
 import pytest
 import json
 import requests
 
 
-# Get --api-gw-url parameter in
+# Get --api-gw-domain parameter in
 @pytest.fixture
 def api_gw_domain(request):
     return request.config.getoption('--api-gw-domain')
@@ -20,8 +20,8 @@ def get_visitors_api_url(api_gw_domain):
 
 
 @pytest.fixture
-def update_visitors_api_url(api_gw_url):
-    api_url = f'https://{api_gw_url}/updateVisitors'
+def update_visitors_api_url(api_gw_domain):
+    api_url = f'https://{api_gw_domain}/updateVisitors'
     return api_url
 
 
