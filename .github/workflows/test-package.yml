@@ -92,7 +92,7 @@ jobs:
         id: test-api-gw
         working-directory: terraform
         run: |
-          pytest -v ../test/test_api_endpoint.py --api-gw-url=$(terraform output -raw api_gw_url)
+          pytest -v ../test/test_api_endpoint.py --api-gw-domain=$(terraform output -raw api_gw_customain_domain)
 
       - name: Terraform destroy
         id: tf-destroy
