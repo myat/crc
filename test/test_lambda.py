@@ -17,7 +17,10 @@ def invalid_event():
     invalid_event = {
             "resource": "/{proxy+}",
             "path": "/invalidPath",
-            "httpMethod": "GET"
+            "httpMethod": "GET",
+            "headers": {
+                "origin": "http://example.com"
+            }
         }
     return invalid_event
 
@@ -27,7 +30,10 @@ def get_visitors_event():
     get_visitors_event = {
             "resource": "/{proxy+}",
             "path": "/getVisitors",
-            "httpMethod": "GET"
+            "httpMethod": "GET",
+            "headers": {
+                "origin": "https://resume.kgmy.at"
+            }
         }
     return get_visitors_event
 
@@ -37,7 +43,10 @@ def update_visitors_event():
     update_visitors_event = {
             "resource": "/{proxy+}",
             "path": "/updateVisitors",
-            "httpMethod": "GET"
+            "httpMethod": "GET",
+            "headers": {
+                "origin": "https://staging.kgmy.at"
+            }
         }
     return update_visitors_event
 
@@ -75,50 +84,50 @@ def set_up(aws_fake_credentials):
             }
         )
 
-        dynamodb.put_item(
-            TableName=DYNAMODB_TABLE_NAME,
-            Item={
-                    'site_name': {
-                        'S': 'resume.kgmy.at'
-                    },
-                    'views': {
-                        'N': '0'
-                    }
-                }
-            )
         yield dynamodb, mockTable
         dynamodb = None
 
 
 # Test response to an invalid request
 # Expect a HTTP 400 response
+# Expect a correct CORS header in the response
 def test_invalid_request(invalid_event, set_up):
     from src.lambda_function import lambda_handler
     response = lambda_handler(event=invalid_event, context={})
 
     assert response['statusCode'] == 400
+    assert response['headers']['Access-Control-Allow-Origin'] != \
+        invalid_event['headers']['origin']
 
 
 # Test response to a getVisitors request
 # Expect a HTTP 200 with non-empty body
+# Expect a correct CORS header in the response
 def test_get_visitors(get_visitors_event, set_up):
     from src.lambda_function import lambda_handler
     response = lambda_handler(event=get_visitors_event, context={})
 
     assert response['statusCode'] == 200
     assert response['body'] is not None
+    assert response['headers']['Access-Control-Allow-Origin'] == \
+        get_visitors_event['headers']['origin']
 
 
 # Test response to a updateVisitros request
 # Expect a HTTP 200, increased 'views' after successive call
+# Expect correct CORS header in the response
 def test_update_visitors(update_visitors_event, set_up):
     from src.lambda_function import lambda_handler
 
     response1 = lambda_handler(update_visitors_event, [])
     assert response1['statusCode'] == 200
+    assert response1['headers']['Access-Control-Allow-Origin'] == \
+        update_visitors_event['headers']['origin']
 
     response2 = lambda_handler(update_visitors_event, [])
     assert response2['statusCode'] == 200
+    assert response2['headers']['Access-Control-Allow-Origin'] == \
+        update_visitors_event['headers']['origin']
 
     response1_views = json.loads(response1['body'])['views']['N']
     response2_views = json.loads(response2['body'])['views']['N']
