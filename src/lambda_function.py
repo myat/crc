@@ -1,5 +1,6 @@
 import json
 import boto3
+from botocore.exceptions import ClientError
 
 DYNAMODB_TABLE_NAME = 'visitor_count_table'
 
@@ -23,9 +24,39 @@ def get_allow_origin(request_origin):
         return {'Access-Control-Allow-Origin': ALLOWED_ORIGINS_LIST[0]}
 
 
+def initialize_visitor_count_item():
+    site_key = {
+        'site_name': {
+            'S': 'resume.kgmy.at'
+        }
+    }
+    try:
+        data = client.get_item(
+            TableName=DYNAMODB_TABLE_NAME,
+            Key=site_key
+        )
+        if 'Item' not in data:
+            client.put_item(
+                TableName=DYNAMODB_TABLE_NAME,
+                Item={
+                    'site_name': {
+                        'S': 'resume.kgmy.at'
+                    },
+                    'views': {
+                        'N': '0'
+                    }
+                }
+            )
+    except ClientError as e:
+        print(e)
+        raise Exception("Failed to initialize table item")
+
+
 def lambda_handler(event, context):
     origin_header = get_allow_origin(event.get('headers', {}).get('origin'))
-    print("Origin header > ", origin_header)
+
+    # Initialize the visitor record table
+    initialize_visitor_count_item()
 
     if (event['path'] == GET_RAW_PATH and
             event['httpMethod'] == HTTP_VERB_GET):
