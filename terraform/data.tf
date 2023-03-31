@@ -31,6 +31,7 @@ data "aws_iam_policy_document" "allow_lambda_dynamodb_rw" {
       "dynamodb:UpdateTimeToLive",
       "dynamodb:DescribeTable",
       "dynamodb:GetItem",
+      "dynamodb:PutItem",
       "dynamodb:Scan",
       "dynamodb:Query",
       "dynamodb:UpdateItem",
