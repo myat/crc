@@ -88,13 +88,6 @@ resource "aws_dynamodb_table" "visitor_count_table" {
   }
 }
 
-# Create a bootstrap record
-resource "aws_dynamodb_table_item" "visitor_counter_table_bootstrap_item" {
-  table_name = aws_dynamodb_table.visitor_count_table.name
-  hash_key   = aws_dynamodb_table.visitor_count_table.hash_key
-  item       = local.bootstrap_json
-}
-
 
 # Define the use of rest API
 resource "aws_api_gateway_rest_api" "visitor_api" {
