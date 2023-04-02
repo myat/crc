@@ -1,0 +1,11 @@
+{
+  "name": "crc-frontend",
+  "version": "1.0.0",
+  "description": "Resume site frontend files ",
+  "author": "KM",
+  "license": "ISC",
+  "private": true,
+  "devDependencies": {
+    "cypress": "^12.9.0"
+  }
+}

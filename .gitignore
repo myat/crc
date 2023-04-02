@@ -35,3 +35,9 @@ terraform.rc
 
 # Ignore backend config
 backend.hcl
+
+# Ignore node_modules
+**/node_modules/*
+
+# Ignore cypress environment files
+cypress.env.json
