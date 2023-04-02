@@ -1,6 +1,7 @@
 describe('View counter', () => {
   it('displays an increasing number of view on reload', () => {
     cy.visit(Cypress.env('site_url'))
+    cy.wait(1000)
     cy.get('p#view-counter')
       .invoke('text')
       .then((text) => {
