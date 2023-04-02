@@ -41,3 +41,7 @@ backend.hcl
 
 # Ignore cypress environment files
 cypress.env.json
+
+# Ignore cypress test outputs
+**/cypress/screenshots/*
+**/cypress/videos/*
