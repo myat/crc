@@ -46,3 +46,6 @@ cypress.env.json
 # Ignore cypress test outputs
 **/cypress/screenshots/*
 **/cypress/videos/*
+
+# Ignore dist folder
+**/dist/*
