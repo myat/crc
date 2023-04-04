@@ -63,7 +63,8 @@ jobs:
             -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
             -backend-config="region=us-east-1" \
             -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
-            -backend-config="encrypt=true"
+            -backend-config="encrypt=true" \
+            -backend-config="key=global/CRC-BACKEND-STAGE/terraform.tfstate"
 
       - name: Terraform plan
         id: tf-plan
