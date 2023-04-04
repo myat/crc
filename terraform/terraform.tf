@@ -3,7 +3,8 @@
 terraform {
 
   backend "s3" {
-    key = "global/crc-front/terraform.tfstate"
+    # Use backend.hcl locally
+    # Or pass backend args via TF_CLI_ARGS_init 
   }
 
   required_providers {
