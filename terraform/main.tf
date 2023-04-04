@@ -17,14 +17,14 @@ provider "gandi" {
 module "template_files" {
   source   = "hashicorp/dir/template"
   version  = "~>1.0.2"
-  base_dir = "../src"
+  base_dir = var.static_files_path
 }
 
 # Create a S3 bucket and upload files
 
 resource "random_pet" "frontend_bucket_name" {
-  prefix = "crc-frontend-bucket"
-  length = 3
+  prefix = lower(format("%s-bucket-%s", local.project, var.deployment_env))
+  length = 2
 }
 
 resource "aws_s3_bucket" "frontend_bucket" {
@@ -75,7 +75,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   logging_config {
     include_cookies = false
     bucket          = "km-resume-crc-logs.s3.amazonaws.com"
-    prefix          = "cf-logs-frontend-staging"
+    prefix          = lower(format("cf-logs-%s-%s", local.project, var.deployment_env))
   }
 
   aliases = [local.cf_alias_domain]
