@@ -8,20 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 <link rel="stylesheet" href="./style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
-<script type='text/javascript'>
-let viewsContainer = document.getElementById('view-counter');
-
-async function fetchViewJSON() {
-  const response = await fetch('https://izbntg0t4f.execute-api.us-east-1.amazonaws.com/test/updateVisitors');
-  const views = await response.json();
-  return views;
-}
-
-fetchViewJSON()
-.then(views => {
-document.getElementById('view-counter').innerText = views.views.N + " views"}) ;
-</script>
-
+<script src="counter.js"></script>
 </head>
 <body>
 <!-- partial:index.partial.html -->
