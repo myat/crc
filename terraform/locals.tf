@@ -1,5 +1,5 @@
 locals {
-  project = "CRC-FRONTEND"
+  project = "crc-frontend"
   # Default tags to be assigned to all resources
   default_tags = {
     project     = local.project
@@ -9,5 +9,5 @@ locals {
 }
 
 locals {
-  cf_alias_domain = var.deployment_env == "PROD" ? "resume.kgmy.at" : "staging.kgmy.at"
+  cf_alias_domain = var.deployment_env == "prod" ? "resume.kgmy.at" : "staging.kgmy.at"
 }
