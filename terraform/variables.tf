@@ -12,20 +12,25 @@ variable "dynamodb_table_name" {
   default     = "visitor_count_table"
 }
 
-variable "api_gateway_custom_domain" {
-  description = "Custom domain name to serve as CloudFront alias"
+# Change this variable for PROD deployment
+# Downstream locals: local.default_tags, local.cf_alias_domain
+
+variable "deployment_env" {
+  description = "The environment to deploy to. This has impact on domain names among others"
   type        = string
-  default     = "stagingapi.kgmy.at"
+  default     = "stage"
+  nullable    = false
+
+  validation {
+    condition     = contains(["stage", "prod"], var.deployment_env)
+    error_message = "Variable deployment_env must be one of: stage (default), prod."
+  }
 }
+
+# Domain name used to get the Gandi DNS zone 
 
 variable "apex_domain" {
   description = "Primary domain name"
   type        = string
   default     = "kgmy.at"
-}
-
-variable "infra_environment" {
-  description = "Environment and stage name to be used for deployment"
-  type        = string
-  default     = "staging"
 }
