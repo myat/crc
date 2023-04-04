@@ -2,11 +2,7 @@ provider "aws" {
   region = var.aws_region
 
   default_tags {
-    tags = {
-      stack       = "crc-backend"
-      project     = "crc"
-      environment = "staging"
-    }
+    tags = local.default_tags
   }
 }
 
@@ -17,8 +13,8 @@ provider "gandi" {
 # Upload function archive to S3 
 
 resource "random_pet" "lambda_bucket_name" {
-  prefix = "crc-backend-lambda-function-bucket"
-  length = 3
+  prefix = lower(format("%s-lambda-function-bucket-%s", local.project, var.deployment_env))
+  length = 2
 }
 
 resource "aws_s3_bucket" "lambda_bucket" {
@@ -105,7 +101,7 @@ resource "aws_api_gateway_resource" "lambda" {
   rest_api_id = aws_api_gateway_rest_api.visitor_api.id
 }
 
-# How the gateway will be interacted from clientt
+# How the gateway will be interacted from client
 resource "aws_api_gateway_method" "lambda" {
   rest_api_id   = aws_api_gateway_rest_api.visitor_api.id
   resource_id   = aws_api_gateway_resource.lambda.id
@@ -148,12 +144,12 @@ resource "aws_api_gateway_deployment" "lambda_api_deployment" {
 resource "aws_api_gateway_stage" "lambda_api_deployment_stage" {
   deployment_id = aws_api_gateway_deployment.lambda_api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.visitor_api.id
-  stage_name    = var.infra_environment
+  stage_name    = var.deployment_env
 }
 
 # Set custom domain name for use with API gateway
 resource "aws_api_gateway_domain_name" "api_gateway_custom_domain" {
-  domain_name              = var.api_gateway_custom_domain
+  domain_name              = local.api_gateway_custom_domain
   regional_certificate_arn = aws_acm_certificate_validation.api_domain_cert_dns_validation.certificate_arn
 
   endpoint_configuration {
@@ -164,7 +160,7 @@ resource "aws_api_gateway_domain_name" "api_gateway_custom_domain" {
 # Issue a certificate in ACM with DNS validation option
 
 resource "aws_acm_certificate" "api_domain_cert" {
-  domain_name       = var.api_gateway_custom_domain
+  domain_name       = local.api_gateway_custom_domain
   validation_method = "DNS"
 }
 
@@ -200,7 +196,7 @@ resource "aws_api_gateway_base_path_mapping" "api_domain_mapping" {
 # Add CNAME to API regional domain name on Gandi
 resource "gandi_livedns_record" "cname_api_gateway" {
   zone   = data.gandi_domain.apex_domain_zone.id
-  name   = replace(var.api_gateway_custom_domain, ".${var.apex_domain}", "")
+  name   = replace(local.api_gateway_custom_domain, ".${var.apex_domain}", "")
   type   = "CNAME"
   ttl    = 300
   values = ["${aws_api_gateway_domain_name.api_gateway_custom_domain.regional_domain_name}."]
