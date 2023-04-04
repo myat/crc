@@ -6,11 +6,18 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "cf_alias_domain" {
-  description = "Custom domain name to serve as CloudFront alias"
+variable "deployment_env" {
+  description = "The environment to deploy to. This has impact on domain names among others"
   type        = string
-  default     = "staging.kgmy.at"
+  default     = "STAGE"
+  nullable    = false
+
+  validation {
+    condition     = contains(["STAGE", "PROD"], var.deployment_env)
+    error_message = "Variable deployment_env must be one of: STAGE (default), PROD."
+  }
 }
+
 
 variable "apex_domain" {
   description = "Primary domain name"

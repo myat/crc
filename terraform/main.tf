@@ -4,11 +4,7 @@ provider "aws" {
   region = var.aws_region
 
   default_tags {
-    tags = {
-      stack       = "crc-frontend"
-      project     = "crc"
-      environment = "staging"
-    }
+    tags = local.default_tags
   }
 }
 
@@ -82,7 +78,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
     prefix          = "cf-logs-frontend-staging"
   }
 
-  aliases = [var.cf_alias_domain]
+  aliases = [local.cf_alias_domain]
 
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
@@ -136,7 +132,7 @@ resource "aws_cloudfront_origin_access_control" "frontend_bucket_oac" {
 # Issue a certificate in ACM with DNS validation option
 
 resource "aws_acm_certificate" "domain_cert" {
-  domain_name       = var.cf_alias_domain
+  domain_name       = local.cf_alias_domain
   validation_method = "DNS"
 }
 
@@ -166,7 +162,7 @@ resource "aws_acm_certificate_validation" "cert_dns_validatiion" {
 
 resource "gandi_livedns_record" "cname_frontend_cf_dist" {
   zone   = data.gandi_domain.apex_domain_zone.id
-  name   = replace(var.cf_alias_domain, ".${var.apex_domain}", "")
+  name   = replace(local.cf_alias_domain, ".${var.apex_domain}", "")
   type   = "CNAME"
   ttl    = 300
   values = ["${aws_cloudfront_distribution.frontend_distribution.domain_name}."]
