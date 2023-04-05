@@ -22,7 +22,7 @@ jobs:
       - name: Run tests
         id: python-test
         run: |
-          pytest -v test/test_lambda.py
+          pytest -v backend/test/test_lambda.py
 
   deploy_and_test:
     name: Deploy and test
@@ -58,7 +58,7 @@ jobs:
 
       - name: Initialize Terraform
         id: tf-init
-        working-directory: terraform
+        working-directory: backend/terraform
         run: |
           terraform init \
             -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
@@ -69,13 +69,13 @@ jobs:
 
       - name: Terraform plan
         id: tf-plan
-        working-directory: terraform
+        working-directory: backend/terraform
         run: |
           terraform plan
 
       - name: Terraform apply
         id: tf-apply
-        working-directory: terraform
+        working-directory: backend/terraform
         run: |
           terraform apply -auto-approve
 
@@ -97,13 +97,13 @@ jobs:
 
       - name: Test if API was deployed and passing tests
         id: test-api-gw
-        working-directory: terraform
+        working-directory: backend/terraform
         run: |
           pytest -v ../test/test_api_endpoint.py --api-gw-domain=$(terraform output -raw api_gw_customain_domain)
 
       - name: Terraform destroy
         id: tf-destroy
         if: success() || failure()
-        working-directory: terraform
+        working-directory: backend/terraform
         run: |
           terraform destroy -auto-approve
