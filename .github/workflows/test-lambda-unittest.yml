@@ -25,4 +25,4 @@ jobs:
       - name: Run tests
         id: python-test
         run: |
-          pytest -v backend/test/test_lambda.py
+          pytest -v backend/test/unittest_lambda.py
