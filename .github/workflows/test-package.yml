@@ -1,0 +1,109 @@
+name: Test the Python package
+
+on:
+  workflow_dispatch
+
+jobs:
+  unittest:
+    name: Perform unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+      - name: Install dependencies for unit test
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-unittest.txt
+      - name: Run tests
+        id: python-test
+        run: |
+          pytest -v test/test_lambda.py
+
+  deploy_and_test:
+    name: Deploy and test
+    needs: unittest
+    runs-on: ubuntu-latest
+
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
+
+    # Important to set terraform_wrapper: false in order to use terraform output
+    # Read more - https://blog.nillsf.com/index.php/2020/08/25/how-to-use-terraform-output-in-a-github-action/
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Terraform
+        id: install-tf
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Print TF version
+        run: |
+          terraform --version
+
+      - name: Configure AWS credentials for staging account
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+          role-session-name: GitHub-Staging-Workflow-Session
+          role-duration-seconds: 900
+
+      - name: Initialize Terraform
+        id: tf-init
+        working-directory: terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="region=us-east-1" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="encrypt=true" \
+            -backend-config="key=global/CRC-BACKEND-STAGE/terraform.tfstate"
+
+      - name: Terraform plan
+        id: tf-plan
+        working-directory: terraform
+        run: |
+          terraform plan
+
+      - name: Terraform apply
+        id: tf-apply
+        working-directory: terraform
+        run: |
+          terraform apply -auto-approve
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          architecture: 'x64'
+
+      - name: Install dependencies for API test
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-api-test.txt
+
+      - name: Sleep for 120 seconds
+        run: sleep 120s
+        shell: bash
+
+
+      - name: Test if API was deployed and passing tests
+        id: test-api-gw
+        working-directory: terraform
+        run: |
+          pytest -v ../test/test_api_endpoint.py --api-gw-domain=$(terraform output -raw api_gw_customain_domain)
+
+      - name: Terraform destroy
+        id: tf-destroy
+        if: success() || failure()
+        working-directory: terraform
+        run: |
+          terraform destroy -auto-approve
