@@ -21,9 +21,8 @@ variable "deployment_env" {
   }
 }
 
-# Path to get the site static files from
-# These will be uploaded to S3
-# Could be modified during PROD deployment (e.g. ../dist/)
+# Path to get the site static files to be uploaded to S3
+# Pass the ../dist folder after running build_dist.sh script when deploying to prod
 
 variable "static_files_path" {
   description = "Path to static files to be hosted on S3"
