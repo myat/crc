@@ -1,7 +1,7 @@
 name: Deploy backend
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       deployment_environment:
         description: 'Environment to deploy to - stage or prod'
