@@ -7,7 +7,10 @@ on:
         description: 'Environment to deploy to - stage or prod'
         required: true
         default: 'stage'
-        type: options
+        type: string
+        options:
+          - stage
+          - prod
 
 jobs:
   print-input:
