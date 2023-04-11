@@ -29,11 +29,11 @@ jobs:
           pytest -v backend/test/unittest_lambda.py
 
   deploy_staging:
-    name: Deploy to staging
-    needs: unittest
     permissions:
       id-token: write
       contents: read
+    name: Deploy to staging
+    needs: unittest
     uses: ./.github/workflows/deploy-backend.yml
     with:
       deployment_environment: stage
