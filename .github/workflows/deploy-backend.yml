@@ -18,4 +18,4 @@ jobs:
     steps:
       - name: 'TEST - Print the input to STDOUT'
         run: |
-        echo Environment is ${{ inputs.deployment_environment }}
+          echo Environment is ${{ inputs.deployment_environment }}
