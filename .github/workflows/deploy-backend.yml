@@ -18,11 +18,25 @@ jobs:
           if [[ '${{ inputs.deployment_environment }}' == 'stage' ]]; then
             echo 'Setting variables for staging ... '
             echo 'TFSTATE_S3_KEY=global/CRC-BACKEND-STAGE/terraform.tfstate' >> $GITHUB_ENV
+            echo 'TF_deployment_env=stage' >> $GITHUB_ENV
           else
             echo 'Setting variables for production ... '
             echo 'TFSTATE_S3_KEY=global/CRC-BACKEND-PROD/terraform.tfstate' >> $GITHUB_ENV
+            echo 'TF_deployment_env=prod' >> $GITHUB_ENV
           fi
 
       - name: 'TEST - Print the env variable'
         run: |
           echo TFSTATE_S3_KEY is set to: $TFSTATE_S3_KEY
+          echo TF_deployment_env is: $TF_deployment_env
+
+      - name: Install Terraform
+        id: install-tf
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Print TF version
+        id: print-tf-ver
+        run: |
+          terraform --version
