@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: 'Set environment variables'
         run: |
-          if ['${{ inputs.deployment_environment }}' == 'stage' ]; then
+          if [[ '${{ inputs.deployment_environment }}' == 'stage' ]]; then
             echo 'Setting variables for staging ... '
             echo 'export TFSTATE_S3_KEY=global/CRC-BACKEND-STAGE/terraform.tfstate' >> $GITHUB_ENV
             echo $GITHUB_ENV
