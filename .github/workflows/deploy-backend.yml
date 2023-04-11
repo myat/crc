@@ -17,12 +17,10 @@ jobs:
         run: |
           if [[ '${{ inputs.deployment_environment }}' == 'stage' ]]; then
             echo 'Setting variables for staging ... '
-            echo 'export TFSTATE_S3_KEY=global/CRC-BACKEND-STAGE/terraform.tfstate' >> $GITHUB_ENV
-            echo $GITHUB_ENV
+            echo 'TFSTATE_S3_KEY=global/CRC-BACKEND-STAGE/terraform.tfstate' >> $GITHUB_ENV
           else
             echo 'Setting variables for production ... '
-            echo 'export TFSTATE_S3_KEY=global/CRC-BACKEND-PROD/terraform.tfstate' >> $GITHUB_ENV
-            echo $GITHUB_ENV
+            echo 'TFSTATE_S3_KEY=global/CRC-BACKEND-PROD/terraform.tfstate' >> $GITHUB_ENV
           fi
 
       - name: 'TEST - Print the env variable'
