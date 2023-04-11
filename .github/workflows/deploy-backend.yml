@@ -10,8 +10,13 @@ on:
         type: string
 
 jobs:
-  print-input:
+  tf-deploy-to-aws:
     runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: 'Set environment variables'
         run: |
