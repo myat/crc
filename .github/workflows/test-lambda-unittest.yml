@@ -27,3 +27,13 @@ jobs:
         id: python-test
         run: |
           pytest -v backend/test/unittest_lambda.py
+
+  deploy_staging:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call deploy-backend with deployment_environment stage 
+        uses: ./deploy-backend
+        with:
+          deployment_environment: stage
