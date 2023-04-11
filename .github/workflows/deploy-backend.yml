@@ -17,5 +17,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'TEST - Print the input to STDOUT'
-      - run: |
+        run: |
         echo Environment is ${{ inputs.deployment_environment }}
