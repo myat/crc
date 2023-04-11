@@ -46,6 +46,11 @@ jobs:
         run: |
           terraform --version
 
+      - name: Print permissions
+        run: echo $ACTIONS_PERMISSIONS
+        env:
+          ACTIONS_PERMISSIONS: ${{ toJson(actions.permissions) }}
+
       - name: Configure AWS credentials for staging account
         if: ${{ inputs.deployment_environment == 'stage' }}
         uses: aws-actions/configure-aws-credentials@v2

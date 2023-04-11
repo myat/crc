@@ -31,6 +31,10 @@ jobs:
         id: python-test
         run: |
           pytest -v backend/test/unittest_lambda.py
+      - name: Print permissions
+        run: echo $ACTIONS_PERMISSIONS
+        env:
+          ACTIONS_PERMISSIONS: ${{ toJson(actions.permissions) }}
 
   deploy_staging:
     name: Deploy to staging
