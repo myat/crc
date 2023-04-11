@@ -13,6 +13,16 @@ jobs:
   print-input:
     runs-on: ubuntu-latest
     steps:
-      - name: 'TEST - Print the input to STDOUT'
+      - name: 'Set environment variables'
         run: |
-          echo Environment is ${{ inputs.deployment_environment }}
+          if ['${{ inputs.deployment_environment }}' == 'stage' ]; then
+            echo 'Setting variables for staging ... '
+            echo 'export TFSTATE_S3_KEY=global/CRC-BACKEND-STAGE/terraform.tfstate' >> $GITHUB_ENV
+          else
+            echo 'Setting variables for production ... '
+            echo 'export TFSTATE_S3_KEY=global/CRC-BACKEND-PROD/terraform.tfstate' >> $GITHUB_ENV
+          fi
+
+      - name: 'TEST - Print the env variable'
+        run: |
+          echo 'TFSTATE_S3_KEY is set to: $TFSTATE_S3_KEY'
