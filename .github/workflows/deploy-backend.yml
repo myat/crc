@@ -40,3 +40,16 @@ jobs:
         id: print-tf-ver
         run: |
           terraform --version
+
+      - name: Configure AWS credentials for staging account
+        if: ${{ inputs.deployment_environment == 'stage' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+          role-session-name: GitHub-Staging-Workflow-Session
+          role-duration-seconds: 900
+
+      - name: Verify AWS identity
+        run: |
+          aws sts get-caller-identity
