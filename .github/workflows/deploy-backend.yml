@@ -8,9 +8,6 @@ on:
         required: true
         default: 'stage'
         type: string
-        options:
-          - stage
-          - prod
 
 jobs:
   print-input:
