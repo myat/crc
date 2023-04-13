@@ -12,7 +12,7 @@ output "api_gw_regional_domain" {
   value = aws_api_gateway_domain_name.api_gateway_custom_domain.regional_domain_name
 }
 
-output "api_gw_customain_domain" {
+output "api_gw_custom_domain" {
   description = "Custom domain for API GW"
 
   value = aws_api_gateway_domain_name.api_gateway_custom_domain.domain_name
