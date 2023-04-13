@@ -104,7 +104,7 @@ jobs:
         id: tf-plan
         working-directory: frontend/terraform
         run: |
-          terraform plan -no-color -out "frontend-tfplan-$TF_deployment_env.out" \ 
+          terraform plan -no-color -out "frontend-tfplan-$TF_deployment_env.out" \
             -var "deployment_env=$TF_deployment_env" \
             -var "static_files_path=$TF_static_files_path"
 
