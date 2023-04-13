@@ -47,4 +47,6 @@ jobs:
         id: run_cypress
         uses: cypress-io/github-action@v5
         with:
-          spec: ./frontend/cypress/e2e/**.cy.js
+          working-directory: frontend
+          spec: cypress/e2e/**.cy.js
+          browser: firefox
