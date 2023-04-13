@@ -36,6 +36,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    secrets: inherit
     name: Deploy to staging
     needs: unittest
     uses: ./.github/workflows/deploy-backend.yml
