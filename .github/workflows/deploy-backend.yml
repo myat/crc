@@ -13,7 +13,10 @@ on:
         required: false
         type: boolean
         default: false
-
+    outputs:
+      TF_api_gw_customain_domain:
+        description: 'Custom domain for API GW deployed by TF'
+        value: ${{ jobs.tf-deploy-to-aws.outputs.tf_output_api_gw_customain_domain }}
 
 jobs:
   tf-deploy-to-aws:
@@ -22,6 +25,9 @@ jobs:
       contents: read
 
     runs-on: ubuntu-latest
+
+    outputs:
+      tf_output_api_gw_customain_domain: ${{ steps.tf-apply.outputs.api_gw_customain_domain }}
 
     steps:
       - uses: actions/checkout@v3
@@ -82,7 +88,23 @@ jobs:
             -backend-config="key=$TFSTATE_S3_KEY"
 
       - name: Terraform plan
+        if: ${{ inputs.stage_destroy == false }}
         id: tf-plan
         working-directory: backend/terraform
         run: |
-          terraform plan -var "deployment_env=$TF_deployment_env"
+          terraform plan -no-color -out "tfplan-$TF_deployment_env.out" -var "deployment_env=$TF_deployment_env"
+
+      - name: Terraform apply
+        if: ${{ inputs.stage_destroy == false }}
+        id: tf-apply
+        working-directory: backend/terraform
+        run: |
+          terraform apply -no-color -auto-approve "tfplan-$TF_deployment_env.out"
+          echo "api_gw_customain_domain=$(terraform output -raw api_gw_customain_domain)" >> $GITHUB_OUTPUT
+
+      - name: Terraform destroy
+        id: tf-destroy
+        if: ${{ inputs.deployment_environment == 'stage' && inputs.stage_destroy == true }}
+        working-directory: backend/terraform
+        run: |
+          terraform destroy -auto-approve
