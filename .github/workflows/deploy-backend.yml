@@ -15,6 +15,10 @@ permissions:
 
 jobs:
   tf-deploy-to-aws:
+    permissions:
+      id-token: write
+      contents: read
+
     runs-on: ubuntu-latest
 
     steps:
@@ -45,11 +49,6 @@ jobs:
         id: print-tf-ver
         run: |
           terraform --version
-
-      - name: Print permissions
-        run: echo $ACTIONS_PERMISSIONS
-        env:
-          ACTIONS_PERMISSIONS: ${{ toJson(actions.permissions) }}
 
       - name: Configure AWS credentials for staging account
         if: ${{ inputs.deployment_environment == 'stage' }}
