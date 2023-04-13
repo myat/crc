@@ -7,10 +7,6 @@ on:
       - 'backend/src/**'
       - 'backend/test/unittest_**.py'
 
-permissions:
-  id-token: write
-  contents: read
-
 jobs:
   unittest:
     name: Perform unit tests
