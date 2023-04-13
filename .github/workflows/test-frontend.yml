@@ -33,9 +33,7 @@ jobs:
 
   e2e_test:
     name: Perform Cypress tests
-    needs:
-      - deploy_frontend_staging
-      - deploy_backend_staging
+    needs: [ deploy_frontend_staging, deploy_backend_staging ]
     runs-on: ubuntu-latest
 
     steps:
