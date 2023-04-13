@@ -69,3 +69,20 @@ jobs:
       - name: Verify AWS identity
         run: |
           aws sts get-caller-identity
+
+      - name: Initialize Terraform
+        id: tf-init
+        working-directory: backend/terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="region=us-east-1" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="encrypt=true" \
+            -backend-config="key=$TFSTATE_S3_KEY"
+
+      - name: Terraform plan
+        id: tf-plan
+        working-directory: backend/terraform
+        run: |
+          terraform plan -var 'deployment_env=$TF_deployment_env'
