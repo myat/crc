@@ -60,4 +60,4 @@ jobs:
 
       - name: Verify output from deploy_staging
         run: |
-        echo ${{ needs.deploy_staging.outputs.TF_api_gw_customain_domain }}
+          echo "${{ needs.deploy_staging.outputs.TF_api_gw_customain_domain }}"
