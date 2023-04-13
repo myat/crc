@@ -85,4 +85,4 @@ jobs:
         id: tf-plan
         working-directory: backend/terraform
         run: |
-          terraform plan -var 'deployment_env=$TF_deployment_env'
+          terraform plan -var "deployment_env=$TF_deployment_env"
