@@ -16,7 +16,7 @@ on:
     outputs:
       TF_api_gw_custom_domain:
         description: 'Custom domain for API GW deployed by TF'
-        value: ${{ jobs.tf-deploy-to-aws.outputs.tf_output_api_gw_custom_domain }}
+        value: ${{ jobs.backend-deploy-to-aws.outputs.tf_output_api_gw_custom_domain }}
 
 jobs:
   backend-deploy-to-aws:
