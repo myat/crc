@@ -1,0 +1,124 @@
+name: Deploy frontend
+
+on:
+  workflow_call:
+    inputs:
+      deployment_environment:
+        description: 'Environment to deploy to - stage or prod'
+        required: true
+        type: string
+        default: 'stage'
+      stage_destroy:
+        description: 'Set deployment_environment to stage and set stage_destroy to true to destroy the staging environment. Will NOT destroy prod environment.'
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      TF_cf_alias_domain:
+        description: 'Alias domain of CloudFront distribution deployed by TF'
+        value: ${{ jobs.frontend-deploy-to-aws.outputs.tf_cf_alias_domain }}
+
+jobs:
+  frontend-deploy-to-aws:
+    permissions:
+      id-token: write
+      contents: read
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      tf_cf_alias_domain: ${{ steps.tf-apply.outputs.cf_alias_domain }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set required environment variables
+      # TFSTATE_S3_KEY is used in TF init to separate staging/production tfstate files
+      # TF_deployment_env is passed to Terraform to determine which alias domain is set to the CF distribution
+      # TF_static_files_path sets the directory from which Terraform uploads to S3. Change to ../dist for prod usage
+      - name: 'Set environment variables'
+        run: |
+          if [[ '${{ inputs.deployment_environment }}' == 'stage' ]]; then
+            echo 'Setting variables for staging ... '
+            echo 'TFSTATE_S3_KEY=global/CRC-FRONTEND-STAGE/terraform.tfstate' >> $GITHUB_ENV
+            echo 'TF_deployment_env=stage' >> $GITHUB_ENV
+            echo 'TF_static_files_path=../src' >> $GITHUB_ENV
+          else
+            echo 'Setting variables for production ... '
+            echo 'TFSTATE_S3_KEY=global/CRC-FRONTEND-PROD/terraform.tfstate' >> $GITHUB_ENV
+            echo 'TF_deployment_env=prod' >> $GITHUB_ENV
+            echo 'TF_static_files_path=../dist' >> $GITHUB_ENV
+          fi
+
+      - name: Install Terraform
+        id: install-tf
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+
+      - name: Print TF version
+        id: print-tf-ver
+        run: |
+          terraform --version
+
+      - name: Configure AWS credentials for staging account
+        if: ${{ inputs.deployment_environment == 'stage' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+          role-session-name: GitHub-Staging-Workflow-Session
+          role-duration-seconds: 900
+
+      - name: Configure AWS credentials for production account
+        if: ${{ inputs.deployment_environment == 'prod' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_PRODUCTION_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+          role-session-name: GitHub-Production-Workflow-Session
+          role-duration-seconds: 900
+
+      - name: Verify AWS identity
+        run: |
+          aws sts get-caller-identity
+
+      - name: Initialize Terraform
+        id: tf-init
+        working-directory: frontend/terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="region=us-east-1" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="encrypt=true" \
+            -backend-config="key=$TFSTATE_S3_KEY"
+
+      - name: Run build_dist.sh helper script if deploying to production
+        if: ${{ inputs.deployment_environment == 'prod' }}
+        id: build-dist-script
+        run: ./frontend/build/build_dist.sh
+
+      - name: Terraform plan
+        if: ${{ inputs.stage_destroy == false }}
+        id: tf-plan
+        working-directory: frontend/terraform
+        run: |
+          terraform plan -no-color -out "frontend-tfplan-$TF_deployment_env.out" \ 
+            -var "deployment_env=$TF_deployment_env" \
+            -var "static_files_path=$TF_static_files_path"
+
+      - name: Terraform apply
+        if: ${{ inputs.stage_destroy == false }}
+        id: tf-apply
+        working-directory: frontend/terraform
+        run: |
+          terraform apply -no-color -auto-approve "frontend-tfplan-$TF_deployment_env.out"
+          echo "cf_alias_domain=$(terraform output -raw cf_alias_domain)" >> $GITHUB_OUTPUT
+
+      - name: Terraform destroy
+        id: tf-destroy
+        if: ${{ inputs.deployment_environment == 'stage' && inputs.stage_destroy == true }}
+        working-directory: frontend/terraform
+        run: |
+          terraform destroy -auto-approve

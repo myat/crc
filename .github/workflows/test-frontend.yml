@@ -1,0 +1,44 @@
+name: Run frontend tests
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend/src/**.html'
+      - 'frontend/src/**.js'
+
+jobs:
+
+  deploy_frontend_staging:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Deploy frontend to staging
+    uses: ./.github/workflows/deploy-frontend.yml
+    with:
+      deployment_environment: stage
+      stage_destroy: false
+
+  deploy_backend_staging:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Deploy backend to staging
+    uses: ./.github/workflows/deploy-backend.yml
+    with:
+      deployment_environment: stage
+      stage_destroy: false
+
+  e2e_test:
+    name: Perform Cypress tests
+    needs: [deploy_frontend_staging, deploy_frontend_staging]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Test deploy outputs
+        run: |
+          echo "${{ needs.deploy_backend_staging.outputs.TF_api_gw_customain_domain }}"
+          echo "${{ needs.deploy_frontend_staging.outputs.TF_cf_alias_domain }}"
