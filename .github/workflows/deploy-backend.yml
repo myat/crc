@@ -14,9 +14,9 @@ on:
         type: boolean
         default: false
     outputs:
-      TF_api_gw_customain_domain:
+      TF_api_gw_custom_domain:
         description: 'Custom domain for API GW deployed by TF'
-        value: ${{ jobs.tf-deploy-to-aws.outputs.tf_output_api_gw_customain_domain }}
+        value: ${{ jobs.tf-deploy-to-aws.outputs.tf_output_api_gw_custom_domain }}
 
 jobs:
   backend-deploy-to-aws:
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      tf_output_api_gw_customain_domain: ${{ steps.tf-apply.outputs.api_gw_customain_domain }}
+      tf_output_api_gw_custom_domain: ${{ steps.tf-apply.outputs.api_gw_custom_domain }}
 
     steps:
       - uses: actions/checkout@v3
@@ -100,7 +100,7 @@ jobs:
         working-directory: backend/terraform
         run: |
           terraform apply -no-color -auto-approve "backend-tfplan-$TF_deployment_env.out"
-          echo "api_gw_customain_domain=$(terraform output -raw api_gw_customain_domain)" >> $GITHUB_OUTPUT
+          echo "api_gw_custom_domain=$(terraform output -raw api_gw_custom_domain)" >> $GITHUB_OUTPUT
 
       - name: Terraform destroy
         id: tf-destroy

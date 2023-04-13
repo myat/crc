@@ -68,4 +68,4 @@ jobs:
         working-directory: backend/terraform
         run: |
           pytest -v ../test/test_api_endpoint.py \
-            --api-gw-domain="${{ needs.deploy_backend_staging.outputs.TF_api_gw_customain_domain }}"
+            --api-gw-domain="${{ needs.deploy_backend_staging.outputs.TF_api_gw_custom_domain }}"

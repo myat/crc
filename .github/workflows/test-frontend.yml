@@ -40,5 +40,5 @@ jobs:
       - uses: actions/checkout@v3
       - name: Test deploy outputs
         run: |
-          echo "${{ needs.deploy_backend_staging.outputs.TF_api_gw_customain_domain }}"
+          echo "${{ needs.deploy_backend_staging.outputs.TF_api_gw_custom_domain }}"
           echo "${{ needs.deploy_frontend_staging.outputs.TF_cf_alias_domain }}"
