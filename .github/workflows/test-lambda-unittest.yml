@@ -58,6 +58,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-api-test.txt
 
-      - name: Verify output from deploy_staging
+      - name: Sleep for 120 seconds to wait for full API deployment with SSL
+        run: sleep 120s
+        shell: bash
+
+      - name: Test if API was deployed and passing tests
+        id: test-api-gw
+        working-directory: backend/terraform
         run: |
-          echo "${{ needs.deploy_staging.outputs.TF_api_gw_customain_domain }}"
+          pytest -v ../test/test_api_endpoint.py --api-gw-domain="${{ needs.deploy_staging.outputs.TF_api_gw_customain_domain }}"
