@@ -19,7 +19,7 @@ on:
         value: ${{ jobs.tf-deploy-to-aws.outputs.tf_output_api_gw_customain_domain }}
 
 jobs:
-  tf-deploy-to-aws:
+  backend-deploy-to-aws:
     permissions:
       id-token: write
       contents: read
@@ -92,14 +92,14 @@ jobs:
         id: tf-plan
         working-directory: backend/terraform
         run: |
-          terraform plan -no-color -out "tfplan-$TF_deployment_env.out" -var "deployment_env=$TF_deployment_env"
+          terraform plan -no-color -out "backend-tfplan-$TF_deployment_env.out" -var "deployment_env=$TF_deployment_env"
 
       - name: Terraform apply
         if: ${{ inputs.stage_destroy == false }}
         id: tf-apply
         working-directory: backend/terraform
         run: |
-          terraform apply -no-color -auto-approve "tfplan-$TF_deployment_env.out"
+          terraform apply -no-color -auto-approve "backend-tfplan-$TF_deployment_env.out"
           echo "api_gw_customain_domain=$(terraform output -raw api_gw_customain_domain)" >> $GITHUB_OUTPUT
 
       - name: Terraform destroy
