@@ -6,8 +6,14 @@ on:
       deployment_environment:
         description: 'Environment to deploy to - stage or prod'
         required: true
-        default: 'stage'
         type: string
+        default: 'stage'
+      stage_destroy:
+        description: 'Set deployment_environment to stage and set stage_destroy to true to destroy the staging environment. Will NOT destroy prod environment.'
+        required: false
+        type: boolean
+        default: false
+
 
 jobs:
   tf-deploy-to-aws:
@@ -31,11 +37,6 @@ jobs:
             echo 'TF_deployment_env=prod' >> $GITHUB_ENV
           fi
 
-      - name: 'TEST - Print the env variable'
-        run: |
-          echo TFSTATE_S3_KEY is set to: $TFSTATE_S3_KEY
-          echo TF_deployment_env is: $TF_deployment_env
-
       - name: Install Terraform
         id: install-tf
         uses: hashicorp/setup-terraform@v2
@@ -54,6 +55,15 @@ jobs:
           role-to-assume: ${{ secrets.AWS_STAGING_ROLE_TO_ASSUME }}
           aws-region: us-east-1
           role-session-name: GitHub-Staging-Workflow-Session
+          role-duration-seconds: 900
+
+      - name: Configure AWS credentials for production account
+        if: ${{ inputs.deployment_environment == 'prod' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_PRODUCTION_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+          role-session-name: GitHub-Production-Workflow-Session
           role-duration-seconds: 900
 
       - name: Verify AWS identity
