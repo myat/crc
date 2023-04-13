@@ -35,7 +35,7 @@ jobs:
     name: Perform Cypress tests
     needs:
       - deploy_frontend_staging
-      - deploy_frontend_staging
+      - deploy_backend_staging
     runs-on: ubuntu-latest
 
     steps:
