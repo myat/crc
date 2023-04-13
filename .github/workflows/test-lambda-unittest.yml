@@ -6,6 +6,7 @@ on:
     paths:
       - 'backend/src/**'
       - 'backend/test/unittest_**.py'
+      - 'backend/test/test_**.py'
 
 jobs:
   unittest:
@@ -28,7 +29,7 @@ jobs:
         run: |
           pytest -v backend/test/unittest_lambda.py
 
-  deploy_staging:
+  deploy_backend_staging:
     permissions:
       id-token: write
       contents: read
@@ -41,7 +42,7 @@ jobs:
       stage_destroy: false
 
   api_test:
-    needs: deploy_staging
+    needs: deploy_backend_staging
     name: Run tests to the deployed API
     runs-on: ubuntu-latest
 
@@ -66,4 +67,5 @@ jobs:
         id: test-api-gw
         working-directory: backend/terraform
         run: |
-          pytest -v ../test/test_api_endpoint.py --api-gw-domain="${{ needs.deploy_staging.outputs.TF_api_gw_customain_domain }}"
+          pytest -v ../test/test_api_endpoint.py \
+            --api-gw-domain="${{ needs.deploy_backend_staging.outputs.TF_api_gw_customain_domain }}"
