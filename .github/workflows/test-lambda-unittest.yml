@@ -38,3 +38,4 @@ jobs:
     uses: ./.github/workflows/deploy-backend.yml
     with:
       deployment_environment: stage
+      stage_destroy: false
