@@ -33,7 +33,8 @@ resource "random_pet" "cf_log_bucket_name" {
 }
 
 resource "aws_s3_bucket" "cf_log_bucket" {
-  bucket = random_pet.cf_log_bucket_name.id
+  bucket        = random_pet.cf_log_bucket_name.id
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_acl" "cf_log_bucket_acl" {
