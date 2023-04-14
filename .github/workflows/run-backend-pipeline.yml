@@ -27,7 +27,7 @@ jobs:
 
   api_test:
     needs: deploy_backend_staging
-    if: ${{ jobs.deploy_backend_staging.result == 'success' }}
+    if: ${{ needs.deploy_backend_staging.result == 'success' }}
     name: Run tests to the deployed API
     uses: ./.github/workflows/run-api-test.yml
     with:

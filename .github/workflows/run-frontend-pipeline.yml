@@ -34,7 +34,7 @@ jobs:
   e2e_test:
     name: Run Cypress tests
     needs: [ deploy_frontend_staging, deploy_backend_staging ]
-    if: ${{ jobs.deploy_frontend_staging.result == 'success' && jobs.deploy_backend_staging.result =='success' }}
+    if: ${{ needs.deploy_frontend_staging.result == 'success' && needs.deploy_backend_staging.result =='success' }}
     uses: ./.github/workflows/run-cypress.yml
     with:
       site_domain: ${{ needs.deploy_frontend_staging.outputs.TF_cf_alias_domain }}
