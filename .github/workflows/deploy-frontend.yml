@@ -88,9 +88,9 @@ jobs:
         working-directory: frontend/terraform
         run: |
           terraform init \
-            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STAGE_STATE_BUCKET }}" \
             -backend-config="region=us-east-1" \
-            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STAGE_STATELOCK_TABLE }}" \
             -backend-config="encrypt=true" \
             -backend-config="key=$TFSTATE_S3_KEY"
 

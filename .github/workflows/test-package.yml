@@ -61,9 +61,9 @@ jobs:
         working-directory: backend/terraform
         run: |
           terraform init \
-            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STAGE_STATE_BUCKET }}" \
             -backend-config="region=us-east-1" \
-            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STAGE_STATELOCK_TABLE }}" \
             -backend-config="encrypt=true" \
             -backend-config="key=global/CRC-BACKEND-STAGE/terraform.tfstate"
 
