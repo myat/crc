@@ -28,3 +28,5 @@ jobs:
           working-directory: frontend
           spec: cypress/e2e/**.cy.js
           browser: firefox
+          wait-on: $CYPRESS_site_url
+          wait-on-timeout: 600
