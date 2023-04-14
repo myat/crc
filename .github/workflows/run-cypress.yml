@@ -1,0 +1,31 @@
+name: Run Cypress
+
+on:
+  workflow_call:
+  with:
+    inputs:
+      site_domain:
+        description: 'Website domain to run Cypress tests on. Expects string without any http(s):// prefix'
+        required: true
+        type: string
+        default: ''
+
+jobs:
+
+  run_cypress:
+    name: Run Cypress tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set workflow input site_url to GitHub env
+        run: |
+          echo "CYPRESS_site_url=https://${{ inputs.site_domain }}" >> $GITHUB_ENV
+
+      - name: Run Cypress
+        id: run_cypress
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: frontend
+          spec: cypress/e2e/**.cy.js
+          browser: firefox

@@ -34,19 +34,6 @@ jobs:
   e2e_test:
     name: Perform Cypress tests
     needs: [ deploy_frontend_staging, deploy_backend_staging ]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set frontend deploy output to GitHub env
-        run: |
-          echo "${{ needs.deploy_backend_staging.outputs.TF_api_gw_custom_domain }}"
-          echo "CYPRESS_site_url=https://${{ needs.deploy_frontend_staging.outputs.TF_cf_alias_domain }}" >> $GITHUB_ENV
-
-      - name: Run Cypress
-        id: run_cypress
-        uses: cypress-io/github-action@v5
-        with:
-          working-directory: frontend
-          spec: cypress/e2e/**.cy.js
-          browser: firefox
+    uses: ./.github/workflows/run-cypress.yml
+    with:
+      site_domain: ${{ needs.deploy_frontend_staging.outputs.TF_cf_alias_domain }}
