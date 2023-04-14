@@ -1,4 +1,4 @@
-name: Run frontend tests
+name: Run frontend pipeline
 
 on:
   workflow_dispatch:
