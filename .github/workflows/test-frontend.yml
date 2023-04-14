@@ -32,7 +32,7 @@ jobs:
       stage_destroy: false
 
   e2e_test:
-    name: Perform Cypress tests
+    name: Run Cypress tests
     needs: [ deploy_frontend_staging, deploy_backend_staging ]
     uses: ./.github/workflows/run-cypress.yml
     with:
