@@ -27,6 +27,20 @@ resource "random_pet" "frontend_bucket_name" {
   length = 2
 }
 
+resource "random_pet" "cf_log_bucket_name" {
+  prefix = lower(format("%s-log-bucket-%s", local.project, var.deployment_env))
+  length = 2
+}
+
+resource "aws_s3_bucket" "cf_log_bucket" {
+  bucket = random_pet.cf_log_bucket_name.id
+}
+
+resource "aws_s3_bucket_acl" "cf_log_bucket_acl" {
+  bucket = aws_s3_bucket.cf_log_bucket.id
+  acl    = "private"
+}
+
 resource "aws_s3_bucket" "frontend_bucket" {
   bucket = random_pet.frontend_bucket_name.id
 }
@@ -74,7 +88,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
 
   logging_config {
     include_cookies = false
-    bucket          = "km-resume-crc-logs.s3.amazonaws.com"
+    bucket          = aws_s3_bucket.cf_log_bucket.id
     prefix          = lower(format("cf-logs-%s-%s", local.project, var.deployment_env))
   }
 
