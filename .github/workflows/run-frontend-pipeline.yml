@@ -38,3 +38,29 @@ jobs:
     uses: ./.github/workflows/run-cypress.yml
     with:
       site_domain: ${{ needs.deploy_frontend_staging.outputs.TF_cf_alias_domain }}
+
+  deploy_frontend_production:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Deploy frontend to production
+    needs: e2e_test
+    if: ${{ needs.e2e_test.result == 'success' }}
+    uses: ./.github/workflows/deploy-frontend.yml
+    with:
+      deployment_environment: prod
+      stage_destroy: false
+
+  destroy_frontend_staging:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Destroy frontend staging
+    needs: e2e_test
+    if: ${{ needs.e2e_test.result == 'success' }}
+    uses: ./.github/workflows/deploy-frontend.yml
+    with:
+      deployment_environment: stage
+      stage_destroy: true
