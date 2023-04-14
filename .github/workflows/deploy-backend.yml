@@ -76,14 +76,27 @@ jobs:
         run: |
           aws sts get-caller-identity
 
-      - name: Initialize Terraform
-        id: tf-init
+      - name: Initialize Terraform with S3 backend - staging
+        if: ${{ inputs.deployment_environment == 'stage' }}
+        id: tf-init-stage
         working-directory: backend/terraform
         run: |
           terraform init \
-            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STATE_BUCKET }}" \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_STAGE_STATE_BUCKET }}" \
             -backend-config="region=us-east-1" \
-            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STATELOCK_TABLE }}" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_STAGE_STATELOCK_TABLE }}" \
+            -backend-config="encrypt=true" \
+            -backend-config="key=$TFSTATE_S3_KEY"
+
+      - name: Initialize Terraform with S3 backend - production
+        if: ${{ inputs.deployment_environment == 'prod' }}
+        id: tf-init-prod
+        working-directory: backend/terraform
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.AWS_TERRAFORM_PROD_STATE_BUCKET }}" \
+            -backend-config="region=us-east-1" \
+            -backend-config="dynamodb_table=${{ secrets.AWS_TERRAFORM_PROD_STATELOCK_TABLE }}" \
             -backend-config="encrypt=true" \
             -backend-config="key=$TFSTATE_S3_KEY"
 
@@ -107,4 +120,4 @@ jobs:
         if: ${{ inputs.deployment_environment == 'stage' && inputs.stage_destroy == true }}
         working-directory: backend/terraform
         run: |
-          terraform destroy -auto-approve
+          terraform destroy -var "deployment_env=$TF_deployment_env" -auto-approve
