@@ -110,7 +110,8 @@ jobs:
       - name: Run build_dist.sh helper script if deploying to production
         if: ${{ inputs.deployment_environment == 'prod' }}
         id: build-dist-script
-        run: ./frontend/build/build_dist.sh
+        working-directory: frontend/build
+        run: ./build_dist.sh
 
       - name: Terraform plan
         if: ${{ inputs.stage_destroy == false }}
