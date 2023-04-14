@@ -1,0 +1,33 @@
+name: Run backend pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'backend/src/**'
+      - 'backend/test/unittest_**.py'
+      - 'backend/test/test_**.py'
+
+jobs:
+  unittest:
+    name: Run unit tests
+    uses: ./.github/workflows/run-unittest.yml
+
+  deploy_backend_staging:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Deploy API to staging
+    needs: unittest
+    uses: ./.github/workflows/deploy-backend.yml
+    with:
+      deployment_environment: stage
+      stage_destroy: false
+
+  api_test:
+    needs: deploy_backend_staging
+    name: Run tests to the deployed API
+    uses: ./.github/workflows/run-api-test.yml
+    with:
+      api_gw_custom_domain: ${{ needs.deploy_backend_staging.outputs.TF_api_gw_custom_domain }}
