@@ -59,6 +59,6 @@ def test_update_visitors_api_endpoint_response(update_visitors_api_url):
     assert response1.headers['Access-Control-Allow-Origin'] == \
         "https://resume.kgmy.at"
 
-    response1_views = response1.json()['views']['N']
-    response2_views = response2.json()['views']['N']
+    response1_views = int(response1.json()['views']['N'])
+    response2_views = int(response2.json()['views']['N'])
     assert response2_views > response1_views
