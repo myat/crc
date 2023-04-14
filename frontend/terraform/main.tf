@@ -88,7 +88,7 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
 
   logging_config {
     include_cookies = false
-    bucket          = aws_s3_bucket.cf_log_bucket.id
+    bucket          = aws_s3_bucket.cf_log_bucket.bucket_domain_name
     prefix          = lower(format("cf-logs-%s-%s", local.project, var.deployment_env))
   }
 
