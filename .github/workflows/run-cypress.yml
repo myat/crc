@@ -2,7 +2,6 @@ name: Run Cypress
 
 on:
   workflow_call:
-  with:
     inputs:
       site_domain:
         description: 'Website domain to run Cypress tests on. Expects string without any http(s):// prefix'
