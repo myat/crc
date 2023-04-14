@@ -32,3 +32,29 @@ jobs:
     uses: ./.github/workflows/run-api-test.yml
     with:
       api_gw_custom_domain: ${{ needs.deploy_backend_staging.outputs.TF_api_gw_custom_domain }}
+
+  deploy_backend_production:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Deploy API to production
+    needs: api_test
+    if: ${{ needs.api_test.result == 'success' }}
+    uses: ./.github/workflows/deploy-backend.yml
+    with:
+      deployment_environment: prod
+      stage_destroy: false
+
+  destroy_backend_staging:
+    permissions:
+      id-token: write
+      contents: read
+    secrets: inherit
+    name: Destroy the staging API
+    needs: api_test
+    if: ${{ needs.api_test.result == 'success' }}
+    uses: ./.github/workflows/deploy-backend.yml
+    with:
+      deployment_environment: stage
+      stage_destroy: true
