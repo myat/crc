@@ -11,3 +11,7 @@ locals {
 locals {
   api_gateway_custom_domain = var.deployment_env == "prod" ? "api.kgmy.at" : "stagingapi.kgmy.at"
 }
+
+locals {
+  cf_alias_domain = var.deployment_env == "prod" ? "resume.kgmy.at" : "staging.kgmy.at"
+}

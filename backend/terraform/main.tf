@@ -215,5 +215,5 @@ module "cors" {
     "HEAD",
     "GET"
   ]
-  allow_origin = "staging.kgmy.at"
+  allow_origin = local.cf_alias_domain
 }
