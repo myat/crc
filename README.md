@@ -6,7 +6,7 @@ The frontend static site is hosted in an AWS S3 bucket, served via CloudFront. T
 
 ## Deployment
 
-Repo is continouslly tested and deployed. Check [run-backend-pipeline](.github/workflows/run-backend-pipeline.yml) and [run-front-pipeline](.github/workflows/run-frontend-pipeline.yml) workflows for deployment steps.
+Repo is continuously tested and deployed. Check [run-backend-pipeline](.github/workflows/run-backend-pipeline.yml) and [run-front-pipeline](.github/workflows/run-frontend-pipeline.yml) workflows for deployment steps.
 
 
 ## Contributing
