@@ -2,7 +2,7 @@
 
 This repo contains the files of my [resume site](https://resume.kgmy.at). This is built as a hands-on response to the Cloud Resume Challenge. Full details of the Cloud Resume Challenge can be found [here](https://cloudresumechallenge.dev/).
 
-The frontend static site is hosted in an AWS S3 bucket, served via CloudFront. The backend (a simple view counter) is provided by Lambda, exposed through API Gateway. All infrastructure deployment is handled by Terraform.
+The frontend static site is hosted in an AWS S3 bucket, served via CloudFront. The backend (a simple view counter) is provided by Lambda and DynamoDB, exposed through API Gateway. All infrastructure deployment is handled by Terraform.
 
 ## Deployment
 
