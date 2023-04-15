@@ -8,7 +8,7 @@ Cypress end-to-end tests can be found in [cypress/e2e](cypress/e2e/). Backend mu
 
 ## Deployment
 
-Prodction deployment requires a replacement of API endpoint string in [counter.js](src/counter.js). This is achieved by calling the helper script [build_dist.sh](build/build_dist.sh) from the [deployment pipeline](../.github/workflows/run-frontend-pipeline.yml).
+Prodction deployment requires a replacement of API endpoint string in [counter.js](src/counter.js). This is achieved by calling the helper script [build_dist.sh](build/build_dist.sh) from the [frontend deployment workflow](../.github/workflows/deploy-frontend.yml).
 
 ## Contributing
 
