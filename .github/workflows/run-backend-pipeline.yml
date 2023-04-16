@@ -1,4 +1,4 @@
-name: Run backend pipeline
+name: Backend pipeline
 
 on:
   workflow_dispatch:

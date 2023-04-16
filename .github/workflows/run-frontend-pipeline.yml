@@ -1,4 +1,4 @@
-name: Run frontend pipeline
+name: Frontend pipeline
 
 on:
   workflow_dispatch:
