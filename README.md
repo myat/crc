@@ -2,6 +2,8 @@
 
 This repo contains the files of my [resume site](https://resume.kgmy.at). This is built as a hands-on response to the Cloud Resume Challenge. Full details of the Cloud Resume Challenge can be found [here](https://cloudresumechallenge.dev/).
 
+[![Backend Pipeline](https://github.com/myat/crc/actions/workflows/run-backend-pipeline.yml/badge.svg?branch=main)](https://github.com/myat/crc/actions/workflows/run-backend-pipeline.yml)
+[![Frontend Pipeline](https://github.com/myat/crc/actions/workflows/run-frontend-pipeline.yml/badge.svg?branch=main)](https://github.com/myat/crc/actions/workflows/run-frontend-pipeline.yml)
 
 ## Architecture
 
