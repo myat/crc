@@ -37,7 +37,16 @@ resource "aws_s3_bucket" "cf_log_bucket" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_ownership_controls" "cf_log_bucket_ownership_control" {
+  bucket = aws_s3_bucket.cf_log_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
 resource "aws_s3_bucket_acl" "cf_log_bucket_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.cf_log_bucket_ownership_control]
+
   bucket = aws_s3_bucket.cf_log_bucket.id
   acl    = "private"
 }
@@ -46,7 +55,16 @@ resource "aws_s3_bucket" "frontend_bucket" {
   bucket = random_pet.frontend_bucket_name.id
 }
 
+resource "aws_s3_bucket_ownership_controls" "frontend_bucket_ownership_control" {
+  bucket = aws_s3_bucket.frontend_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
 resource "aws_s3_bucket_acl" "bucket_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.frontend_bucket_ownership_control]
+
   bucket = aws_s3_bucket.frontend_bucket.id
   acl    = "private"
 }
