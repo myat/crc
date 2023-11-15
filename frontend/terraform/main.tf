@@ -40,7 +40,7 @@ resource "aws_s3_bucket" "cf_log_bucket" {
 resource "aws_s3_bucket_ownership_controls" "cf_log_bucket_ownership_control" {
   bucket = aws_s3_bucket.cf_log_bucket.id
   rule {
-    object_ownership = "BucketOwnerPreferred"
+    object_ownership = "ObjectWriter"
   }
 }
 
